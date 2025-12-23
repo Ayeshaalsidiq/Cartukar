@@ -1,17 +1,21 @@
 <x-app>
     <x-slot name="title">{{ $car->brand }} {{ $car->model }} | Detail Unit</x-slot>
-
-    {{--
-        ===============================================================
-        1. LOGIKA PHP (SAFE ZONE)
-        Semua variabel disiapkan di sini agar HTML bersih & tidak error
-        ===============================================================
-    --}}
+    
     @php
-    // A. Gambar Utama (Safe Logic)
+    // --- PERBAIKAN LOGIKA GAMBAR (SAFE LOGIC) ---
+    // Kita gunakan \Illuminate\Support\Str secara langsung (tanpa 'use')
+    
+    $rawImage = $car->image;
+    // Cek apakah path di database format lama (/storage/...) atau baru (cars/...)
+    $processedImage = \Illuminate\Support\Str::startsWith($rawImage, '/storage') 
+        ? asset($rawImage) 
+        : asset('storage/' . $rawImage);
+
+    // A. Gambar Utama 
+    // Jika ada galeri, pakai foto pertama galeri. Jika tidak, pakai processedImage.
     $mainImage = ($car->images && $car->images->count() > 0)
-    ? $car->images->first()->url
-    : $car->image;
+        ? $car->images->first()->url
+        : $processedImage;
 
     // B. Format Harga
     $priceFormatted = number_format($car->price, 0, ',', '.');
@@ -19,21 +23,21 @@
 
     // C. Status Badge & Label
     $statusColor = match($car->status) {
-    'sold' => 'bg-red-500',
-    'booked' => 'bg-yellow-500',
-    default => 'bg-green-500',
+        'sold' => 'bg-red-500',
+        'booked' => 'bg-yellow-500',
+        default => 'bg-green-500',
     };
     $statusLabel = match($car->status) {
-    'sold' => 'TERJUAL',
-    'booked' => 'DIPESAN',
-    default => 'TERSEDIA',
+        'sold' => 'TERJUAL',
+        'booked' => 'DIPESAN',
+        default => 'TERSEDIA',
     };
 
     // D. Link WhatsApp Dinamis
     $pesanWA = "Halo, saya tertarik dengan mobil {$car->brand} {$car->model} tahun {$car->year} (ID: {$car->id}). Apakah unit masih tersedia?";
     $waLink = "https://wa.me/628123456789?text=" . urlencode($pesanWA);
 
-    // E. Simulasi Kredit Sederhana (Hardcoded logic untuk visual)
+    // E. Simulasi Kredit Sederhana
     $dpAmount = $car->price * 0.20; // DP 20%
     $loanAmount = $car->price - $dpAmount;
     $monthlyInstallment = ($loanAmount + ($loanAmount * 0.08 * 5)) / 60; // Bunga 8%, Tenor 5th
@@ -100,11 +104,11 @@
 
                         {{-- Thumbnails --}}
                         <div class="p-4 flex gap-3 overflow-x-auto scrollbar-hide border-t border-gray-100 bg-white">
-                            {{-- Foto Utama --}}
-                            <button @click="activeImage = '{{ $car->image }}'"
+                            {{-- Foto Utama (UPDATED: Menggunakan processedImage) --}}
+                            <button @click="activeImage = '{{ $processedImage }}'"
                                 class="w-20 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all bg-gray-100"
-                                :class="activeImage === '{{ $car->image }}' ? 'border-brand-yellow ring-2 ring-brand-yellow/20' : 'border-transparent opacity-60 hover:opacity-100'">
-                                <img src="{{ $car->image }}" class="w-full h-full object-cover">
+                                :class="activeImage === '{{ $processedImage }}' ? 'border-brand-yellow ring-2 ring-brand-yellow/20' : 'border-transparent opacity-60 hover:opacity-100'">
+                                <img src="{{ $processedImage }}" class="w-full h-full object-cover">
                             </button>
 
                             {{-- Foto Galeri --}}
@@ -350,7 +354,7 @@
     <script>
         function carDetail() {
             return {
-                // Inisialisasi gambar dari variabel PHP yang sudah aman
+                // Inisialisasi gambar dari variabel PHP yang sudah AMAN (processedImage / mainImage)
                 activeImage: '{{ $mainImage }}',
                 activeSection: 'spesifikasi',
 

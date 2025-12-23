@@ -78,7 +78,7 @@
                 <label class="block text-sm font-bold text-gray-700 mb-4">Update Foto (Opsional)</label>
                 <div class="flex items-center gap-6">
                     <div class="w-32 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm relative">
-                        <img src="{{ $car->image }}" class="w-full h-full object-cover">
+                        <img src="{{asset('storage/' . $car->image) }}" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 w-full bg-black/50 text-white text-[10px] text-center py-1">Foto Saat Ini</div>
                     </div>
                     <div class="flex-1">

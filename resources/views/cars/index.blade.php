@@ -159,7 +159,7 @@
 
                             {{-- Image Container --}}
                             <div class="relative h-56 bg-gray-200 overflow-hidden">
-                                <img src="{{ $car->image }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="{{ $car->model }}">
+                                <img src="{{ Str::startsWith($car->image, '/storage') ? asset($car->image) : asset('storage/' . $car->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="{{ $car->model }}">
 
                                 {{-- Badges --}}
                                 <div class="absolute top-3 left-3 flex gap-2">

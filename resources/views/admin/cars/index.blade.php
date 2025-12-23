@@ -33,7 +33,7 @@
                 <tr class="hover:bg-gray-50 transition group">
                     <td class="px-6 py-4">
                         <div class="w-24 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-sm relative">
-                            <img src="{{ $car->image }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $car->image) }}" class="w-full h-full object-cover">
                         </div>
                     </td>
                     <td class="px-6 py-4">
